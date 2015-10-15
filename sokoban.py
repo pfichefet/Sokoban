@@ -58,10 +58,6 @@ class Sokoban(Problem):
 		# return tuple(successors)
 		pass
 
-	#fonction qui check si ya qqchose a cette coordonnée renvoit T/F ou alors si ca peut sfaire wall, bloc, perso
-	def isSomething(grid):
-		pass
-
 	def createMap(self,path):
 		mapL=[]
 		mapLG=[]
@@ -75,40 +71,26 @@ class Sokoban(Problem):
 		ligne=0
 		sizeC=0
 		for line,lineG in zip(f,g):
-			sizeC=len(line)-1
+			sizeC=len(line)
 			colonne=0
 			for col,colG in zip(line,lineG):
-				if(colonne != 0 and colonne != sizeC-1 and ligne !=0 and ligne != sizeL-1):
+				if(colonne != 0 and colonne != sizeC-2 and ligne !=0 and ligne != sizeL-1):
 					if(col!= '\n' and col!=' '):
-<<<<<<< HEAD
-						mapL.append((ligne,colonne,col))
-					if(colG=='.'):
-						mapLG.append((ligne,colonne,colG))
-=======
 						mapL.append((col,ligne-1,colonne-1))
 					if(colG=='.'):
 						mapLG.append((colG,ligne-1,colonne-1))
->>>>>>> origin/master
 				colonne=colonne+1
 			ligne=ligne+1
 		self.initial=tuple(mapL)
 		self.stateGoal=tuple(mapLG)
-		self.size['line']=sizeL # [0 .. sizeL-1]
-		self.size['col']=sizeC
-		print(sizeL,sizeC)
+		self.size['line']=sizeL-2 #size without extern wall (-3 because of \n)
+		self.size['col']=sizeC-3
+		print('heuristic =', heuristic(tuple(mapL),self.stateGoal))
 		print(mapL)
 		print(mapLG) 
-		printState(mapL,sizeL,sizeC)
 		f.close
 		g.close
-<<<<<<< HEAD
-		#print(startLetter)
-		#print(endLetter)
 
-#{a:{b:c} for a,b,c in tuplelist}
-=======
-
->>>>>>> origin/master
 
 ###################### 
 # Auxiliary function #
@@ -127,6 +109,28 @@ def listToTuple(List):
 	for line in List:
 		Tuple.append(tuple(line))
 	return tuple(Tuple)	
+
+def heuristic(grid, stateGoal):
+	littleMan = []
+	box = []
+	distManToBox = sys.maxsize
+	distBoxToTarget = sys.maxsize
+	for (letter,line,col) in grid:
+		if (letter == '$'):
+			box.append((letter,line,col))
+		elif (letter == '@'):
+			littleMan.append(line)
+			littleMan.append(col)
+	print('littleMan =',littleMan)		
+	for (letter,line,col) in box:
+		if(distManToBox >= abs(littleMan[0]-line)+abs(littleMan[1]-col)):
+			lineBox = line
+			colBox = col
+			distManToBox = abs(littleMan[0]-line)+abs(littleMan[1]-col)
+	for (point,letter,col) in stateGoal:
+		if(distBoxToTarget >= abs(lineBox-line)+abs(colBox-col)):
+			distBoxToTarget = abs(lineBox-line)+abs(colBox-col)
+	return distBoxToTarget+distManToBox
 
 def pathExists(grid, start, end):
 	visited = [ [0 for j in range(0, len(grid[0]))] for i in range(0, len(grid)) ]
@@ -150,20 +154,11 @@ def pathExistsDFS(grid, start, end, visited):
 def inBounds(grid, pos):
 	return 0 <= pos[0] and pos[0] < len(grid) and 0 <= pos[1] and pos[1] < len(grid[0])
 
-def printState(state,ligne,colonne):
-	flline="" #first and last line
-	i=0
-	while(i<colonne):
-		flline+='#'
-		i=i+1
-	print(flline)
-	l=""
-
-# def printState(state):
-# 	for e in state[1]:
-# 		line=''.join(e)
-# 		print(line)
-# 	print("")
+def printState(state):
+	for e in state[1]:
+		line=''.join(e)
+		print(line)
+	print("")
 #####################
 # Launch the search #
 #####################
