@@ -89,6 +89,8 @@ class Sokoban(Problem):
 		print(mapL)
 		print(mapLG) 
 		print(sizeL,sizeC)
+		uh=blockCorner(mapL,0,1,(sizeL-2,sizeC-2))
+		print(uh)
 		printState(mapL,sizeC,sizeL)
 		printState(mapLG,sizeC,sizeL)
 		f.close
@@ -136,6 +138,19 @@ def heuristic(grid, stateGoal):
 	return distBoxToTarget+distManToBox
 
 
+#si touche 2 mur, cas useless (test pas encore si ya une boite qui bloque (vu quon peut ptet la bouger))
+def blockCorner(grid,ligne,colonne,sizeMap):
+	count=0 
+	for col,line in directions:
+		newL=ligne+line
+		newC=colonne+col
+		what=whatIsHere(grid,newL,newC)
+		if what=='wall' or not (inBounds(grid,(newL,newC),sizeMap)):
+			count+=1
+	if count>=2:	
+		return True
+	else:
+		return False
 #Mettre coordonnee sans mur exterieur (je pense)
 def whatIsHere(grid,ligne, colonne):
 	for e in grid:
@@ -167,8 +182,9 @@ def pathExistsDFS(grid, start, end, visited):
 				return True
 	return False
 
-def inBounds(grid, pos):
-	return 0 <= pos[0] and pos[0] < len(grid) and 0 <= pos[1] and pos[1] < len(grid[0])
+#verifie si on est dans la map sans mur externe (ligne,colonne)
+def inBounds(grid, pos,sizeMap):
+	return 0 <= pos[0] and pos[0] < sizeMap[0] and 0 <= pos[1] and pos[1] < sizeMap[1]
 
 #mettre colonne+2 et ligne +2 ou sizeC sizeL du createmap (donc VRAI TAILLE AVEC MUR EXTERNE)
 def printState(state,colonne,ligne):
