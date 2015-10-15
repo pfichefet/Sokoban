@@ -1,4 +1,6 @@
-'''Benjo Fish'''
+'Fichefet Pierrick 26631000'
+'Daubry Benjamin 307210000'
+'Goupe #16'
 import time
 import sys
 from os import listdir,system
