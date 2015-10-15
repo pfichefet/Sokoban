@@ -18,7 +18,18 @@ class Sokoban(Problem):
 		pass
 	
 	def goal_test(self, state):
-		pass
+		boxEndingState = 0
+		NumberOfEndingPoint = len(self.stateGoal)
+		for (letter,line,col) in state:
+			if (letter == '$'):
+				for (point,endLine,endCol) in self.stateGoal:
+					if(line == endLine and col == endCol):
+						boxEndingState += 1
+						break
+		if (NumberOfEndingPoint == boxEndingState):
+			return True
+		else:
+			return False
 	
 	def successor(self, state): #state = (  ( (currentLisLetter),(currentPointLine,currentPointCol) ),(grid)  )
 		# successors = []
@@ -78,9 +89,6 @@ class Sokoban(Problem):
 		print(mapLG) 
 		f.close
 		g.close
-		#print(startLetter)
-		#print(endLetter)
-
 
 
 ###################### 
@@ -133,7 +141,6 @@ def printState(state):
 #####################
 #start_time = time.time()  
 problem=Sokoban(sys.argv[1])
-
 #example of bfs search
 #node=breadth_first_graph_search(problem)
 #node=depth_first_graph_search(problem)
