@@ -89,6 +89,8 @@ class Sokoban(Problem):
 		print(mapL)
 		print(mapLG) 
 		print(sizeL,sizeC)
+		printState(mapL,sizeC,sizeL)
+		printState(mapLG,sizeC,sizeL)
 		f.close
 		g.close
 
@@ -155,10 +157,50 @@ def pathExistsDFS(grid, start, end, visited):
 def inBounds(grid, pos):
 	return 0 <= pos[0] and pos[0] < len(grid) and 0 <= pos[1] and pos[1] < len(grid[0])
 
-def printState(state):
-	for e in state[1]:
-		line=''.join(e)
-		print(line)
+#mettre colonne+2 et ligne +2 pr plus facile
+def printState(state,colonne,ligne):
+	i=0
+	flligne=""
+	while(i<colonne):
+		flligne+='#'
+		i+=1
+	print(flligne)
+	l=[' ']*colonne
+	l[0]='#'
+	l[colonne-1]='#'
+	tempL=1
+	sizestate=len(state)
+	last=1
+	for e in state:
+		line=e[1]
+		col=e[2]
+		elem=e[0]
+		if line+1>tempL:
+			print(''.join(l))
+			j=tempL
+			l=[' ']*colonne
+			l[0]='#'
+			l[colonne-1]='#'
+			while j<line:
+				print(''.join(l))
+				j+=1
+			tempL=line+1
+
+			l[col+1]=elem
+			if(last==sizestate):
+				print(''.join(l))
+		else:
+			l[col+1]=elem
+			tempL=line+1
+		last+=1
+	j=tempL
+	l=[' ']*colonne
+	l[0]='#'
+	l[colonne-1]='#'
+	# while(j<colonne-1):
+	# 	print(''.join(l))
+	# 	j+=1
+	print(flligne)
 	print("")
 #####################
 # Launch the search #
