@@ -135,6 +135,19 @@ def heuristic(grid, stateGoal):
 			distBoxToTarget = abs(lineBox-line)+abs(colBox-col)
 	return distBoxToTarget+distManToBox
 
+
+#Mettre coordonnee sans mur exterieur (je pense)
+def whatIsHere(grid,ligne, colonne):
+	for e in grid:
+		if ligne==e[1] and colonne==e[2]:
+			if e[0] == '$':
+				return 'box'
+			elif e[0] =='#':
+				return 'wall'
+			else:
+				return 'us' #probably useless
+	return 'nothing'
+
 def pathExists(grid, start, end):
 	visited = [ [0 for j in range(0, len(grid[0]))] for i in range(0, len(grid)) ]
 	ok = pathExistsDFS(grid, start, end, visited)
@@ -157,7 +170,7 @@ def pathExistsDFS(grid, start, end, visited):
 def inBounds(grid, pos):
 	return 0 <= pos[0] and pos[0] < len(grid) and 0 <= pos[1] and pos[1] < len(grid[0])
 
-#mettre colonne+2 et ligne +2 pr plus facile
+#mettre colonne+2 et ligne +2 ou sizeC sizeL du createmap (donc VRAI TAILLE AVEC MUR EXTERNE)
 def printState(state,colonne,ligne):
 	i=0
 	flligne=""
