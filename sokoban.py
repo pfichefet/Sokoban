@@ -151,7 +151,7 @@ def blockCorner(grid,ligne,colonne,sizeMap):
 		what=whatIsHere(grid,newL,newC)
 		if what=='wall' or not (inBounds(grid,(newL,newC),sizeMap)):
 			count+=1
-	if count>=2:	
+	if count>2: # > 2 et pas >= car le bloc n'est bloqué que si les 2 mur qui le touchent, touchent des côté adjacent.	
 		return True
 	else:
 		return False
