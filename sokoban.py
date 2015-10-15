@@ -45,6 +45,10 @@ class Sokoban(Problem):
 		# return tuple(successors)
 		pass
 
+	#fonction qui check si ya qqchose a cette coordonnée renvoit T/F ou alors si ca peut sfaire wall, bloc, perso
+	def isSomething(grid):
+		pass
+
 	def createMap(self,path):
 		mapL=[]
 		mapLG=[]
@@ -58,28 +62,30 @@ class Sokoban(Problem):
 		ligne=0
 		sizeC=0
 		for line,lineG in zip(f,g):
-			sizeC=len(line)
+			sizeC=len(line)-1
 			colonne=0
 			for col,colG in zip(line,lineG):
-				if(colonne != 0 and colonne != sizeC-2 and ligne !=0 and ligne != sizeL-1):
+				if(colonne != 0 and colonne != sizeC-1 and ligne !=0 and ligne != sizeL-1):
 					if(col!= '\n' and col!=' '):
-						mapL.append((ligne-1,colonne-1,col))
+						mapL.append((ligne,colonne,col))
 					if(colG=='.'):
-						mapLG.append((ligne-1,colonne-1,colG))
+						mapLG.append((ligne,colonne,colG))
 				colonne=colonne+1
 			ligne=ligne+1
 		self.initial=tuple(mapL)
 		self.stateGoal=tuple(mapLG)
-		self.size['line']=sizeL-2 #size without extern wall (-3 because of \n)
-		self.size['col']=sizeC-3
+		self.size['line']=sizeL # [0 .. sizeL-1]
+		self.size['col']=sizeC
+		print(sizeL,sizeC)
 		print(mapL)
 		print(mapLG) 
+		printState(mapL,sizeL,sizeC)
 		f.close
 		g.close
 		#print(startLetter)
 		#print(endLetter)
 
-
+#{a:{b:c} for a,b,c in tuplelist}
 
 ###################### 
 # Auxiliary function #
@@ -121,11 +127,20 @@ def pathExistsDFS(grid, start, end, visited):
 def inBounds(grid, pos):
 	return 0 <= pos[0] and pos[0] < len(grid) and 0 <= pos[1] and pos[1] < len(grid[0])
 
-def printState(state):
-	for e in state[1]:
-		line=''.join(e)
-		print(line)
-	print("")
+def printState(state,ligne,colonne):
+	flline="" #first and last line
+	i=0
+	while(i<colonne):
+		flline+='#'
+		i=i+1
+	print(flline)
+	l=""
+
+# def printState(state):
+# 	for e in state[1]:
+# 		line=''.join(e)
+# 		print(line)
+# 	print("")
 #####################
 # Launch the search #
 #####################
