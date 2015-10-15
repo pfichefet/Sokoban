@@ -71,10 +71,10 @@ class Sokoban(Problem):
 		ligne=0
 		sizeC=0
 		for line,lineG in zip(f,g):
-			sizeC=len(line)
+			sizeC=len(line)-1
 			colonne=0
 			for col,colG in zip(line,lineG):
-				if(colonne != 0 and colonne != sizeC-2 and ligne !=0 and ligne != sizeL-1):
+				if(colonne != 0 and colonne != sizeC-1 and ligne !=0 and ligne != sizeL-1):
 					if(col!= '\n' and col!=' '):
 						mapL.append((col,ligne-1,colonne-1))
 					if(colG=='.'):
@@ -83,11 +83,12 @@ class Sokoban(Problem):
 			ligne=ligne+1
 		self.initial=tuple(mapL)
 		self.stateGoal=tuple(mapLG)
-		self.size['line']=sizeL-2 #size without extern wall (-3 because of \n)
-		self.size['col']=sizeC-3
+		self.size['line']=sizeL-2 #[0 ... sizeC-2]
+		self.size['col']=sizeC-2
 		print('heuristic =', heuristic(tuple(mapL),self.stateGoal))
 		print(mapL)
 		print(mapLG) 
+		print(sizeL,sizeC)
 		f.close
 		g.close
 
