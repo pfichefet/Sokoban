@@ -14,6 +14,7 @@ class Sokoban(Problem):
 	def __init__(self, init):
 		self.stateGoal = []
 		self.size = {}
+		self.start=()
 		self.createMap(init)
 		pass
 	
@@ -77,6 +78,8 @@ class Sokoban(Problem):
 				if(colonne != 0 and colonne != sizeC-1 and ligne !=0 and ligne != sizeL-1):
 					if(col!= '\n' and col!=' '):
 						mapL.append((col,ligne-1,colonne-1))
+						if(col=='@'):
+							self.start=(ligne-1,colonne-1)
 					if(colG=='.'):
 						mapLG.append((colG,ligne-1,colonne-1))
 				colonne=colonne+1
@@ -92,7 +95,6 @@ class Sokoban(Problem):
 		uh=blockCorner(mapL,0,1,(sizeL-2,sizeC-2))
 		print(uh)
 		printState(mapL,sizeC,sizeL)
-		printState(mapLG,sizeC,sizeL)
 		f.close
 		g.close
 
@@ -225,14 +227,17 @@ def printState(state,colonne,ligne):
 		else:
 			l[col+1]=elem
 			tempL=line+1
+			if(last==sizestate):
+				print(''.join(l))
 		last+=1
+	#j=state[sizestate-1][1]
 	j=tempL
 	l=[' ']*colonne
 	l[0]='#'
 	l[colonne-1]='#'
-	# while(j<colonne-1):
-	# 	print(''.join(l))
-	# 	j+=1
+	while(j<ligne-2):
+		print(''.join(l))
+		j+=1
 	print(flligne)
 	print("")
 #####################
