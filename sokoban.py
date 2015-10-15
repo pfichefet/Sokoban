@@ -1,4 +1,6 @@
-'''Benjo Fish'''
+'Fichefet Pierrick 26631000'
+'Daubry Benjamin 307210000'
+'Goupe #16'
 import time
 import sys
 from os import listdir,system
@@ -16,7 +18,18 @@ class Sokoban(Problem):
 		pass
 	
 	def goal_test(self, state):
-		pass
+		boxEndingState = 0
+		NumberOfEndingPoint = len(self.stateGoal)
+		for (letter,line,col) in state:
+			if (letter == '$'):
+				for (point,endLine,endCol) in self.stateGoal:
+					if(line == endLine and col == endCol):
+						boxEndingState += 1
+						break
+		if (NumberOfEndingPoint == boxEndingState):
+			return True
+		else:
+			return False
 	
 	def successor(self, state): #state = (  ( (currentLisLetter),(currentPointLine,currentPointCol) ),(grid)  )
 		# successors = []
@@ -67,9 +80,15 @@ class Sokoban(Problem):
 			for col,colG in zip(line,lineG):
 				if(colonne != 0 and colonne != sizeC-1 and ligne !=0 and ligne != sizeL-1):
 					if(col!= '\n' and col!=' '):
+<<<<<<< HEAD
 						mapL.append((ligne,colonne,col))
 					if(colG=='.'):
 						mapLG.append((ligne,colonne,colG))
+=======
+						mapL.append((col,ligne-1,colonne-1))
+					if(colG=='.'):
+						mapLG.append((colG,ligne-1,colonne-1))
+>>>>>>> origin/master
 				colonne=colonne+1
 			ligne=ligne+1
 		self.initial=tuple(mapL)
@@ -82,10 +101,14 @@ class Sokoban(Problem):
 		printState(mapL,sizeL,sizeC)
 		f.close
 		g.close
+<<<<<<< HEAD
 		#print(startLetter)
 		#print(endLetter)
 
 #{a:{b:c} for a,b,c in tuplelist}
+=======
+
+>>>>>>> origin/master
 
 ###################### 
 # Auxiliary function #
@@ -146,7 +169,6 @@ def printState(state,ligne,colonne):
 #####################
 #start_time = time.time()  
 problem=Sokoban(sys.argv[1])
-
 #example of bfs search
 #node=breadth_first_graph_search(problem)
 #node=depth_first_graph_search(problem)
