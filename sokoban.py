@@ -19,60 +19,63 @@ class Sokoban(Problem):
 		pass
 	
 	def successor(self, state): #state = (  ( (currentLisLetter),(currentPointLine,currentPointCol) ),(grid)  )
-		successors = []
-		currentListLetter = state[0][0]
-		currentLetter = state[0][0][0]
-		currentStartPoint = state[0][1]
-		grid = tupleToList(state[1])
-		for elem in self.end:
-			if elem[0] == currentLetter:
-				currentEndPoint = (elem[1],elem[2])
-				break 		
-		choice = chooseLetter(grid,currentLetter,currentStartPoint,currentEndPoint,currentListLetter,self.start,self.end)
-		currentListLetter = choice[0] #ChooseLetter check if we need to change the current letter or not.			
-		currentLetter = choice[0][0]  
-		currentStartPoint = choice[1]
-		currentEndPoint = choice[2]		
-		for diir in directions:
-			nextline = currentStartPoint[0]+diir[1]
-			nextcol = currentStartPoint[1]+diir[0]
-			if(pathExists(grid,[nextline,nextcol],currentEndPoint) and grid[nextline][nextcol]=='.'):
-				grid[nextline][nextcol] = currentLetter
-				if(possible(grid,self.start,self.end,list(currentListLetter),currentLetter,(nextline,nextcol))):
-					nextState = ((currentListLetter,(nextline,nextcol)),listToTuple(grid))
-					successors.append( (diir,nextState  ) )
-				grid[nextline][nextcol] = '.'
-		return tuple(successors)
+		# successors = []
+		# currentListLetter = state[0][0]
+		# currentLetter = state[0][0][0]
+		# currentStartPoint = state[0][1]
+		# grid = tupleToList(state[1])
+		# for elem in self.end:
+		# 	if elem[0] == currentLetter:
+		# 		currentEndPoint = (elem[1],elem[2])
+		# 		break 		
+		# choice = chooseLetter(grid,currentLetter,currentStartPoint,currentEndPoint,currentListLetter,self.start,self.end)
+		# currentListLetter = choice[0] #ChooseLetter check if we need to change the current letter or not.			
+		# currentLetter = choice[0][0]  
+		# currentStartPoint = choice[1]
+		# currentEndPoint = choice[2]		
+		# for diir in directions:
+		# 	nextline = currentStartPoint[0]+diir[1]
+		# 	nextcol = currentStartPoint[1]+diir[0]
+		# 	if(pathExists(grid,[nextline,nextcol],currentEndPoint) and grid[nextline][nextcol]=='.'):
+		# 		grid[nextline][nextcol] = currentLetter
+		# 		if(possible(grid,self.start,self.end,list(currentListLetter),currentLetter,(nextline,nextcol))):
+		# 			nextState = ((currentListLetter,(nextline,nextcol)),listToTuple(grid))
+		# 			successors.append( (diir,nextState  ) )
+		# 		grid[nextline][nextcol] = '.'
+		# return tuple(successors)
+		pass
 
 	def createMap(self,path):
 		mapL=[]
-		endLetter=[]
-		letter=[]
-		startLetter=[]
-		f=open(path,'r')
-		ligne=0
+		mapLG=[]
+		f=open(path+'.init','r')
+		sizeL=0
 		for line in f:
-			mapL2=[]
-			colonne=0
-			for col in line:
-				if(col!= '\n'):
-					mapL2.append(col)
-				if(col!='.' and col!='\n'):
-					if col in letter:
-						endLetter.append((col,ligne,colonne))
-					else:
-						letter.append(col)
-						startLetter.append((col,ligne,colonne))
-				colonne=colonne+1
-			mapL.append(tuple(mapL2))
-			ligne=ligne+1
-		self.end=endLetter
-		self.letter=letter
-		self.start=startLetter
-		line = startLetter[0][1]
-		col = startLetter[0][2]
-		self.initial=((tuple(letter),(line,col)),tuple(mapL))
+			sizeL+=1
 		f.close
+		f=open(path+'.init','r')
+		g=open(path+'.goal','r')
+		ligne=0
+		sizeC=0
+		for line,lineG in zip(f,g):
+			sizeC=len(line)
+			colonne=0
+			for col,colG in zip(line,lineG):
+				if(colonne != 0 and colonne != sizeC-2 and ligne !=0 and ligne != sizeL-1):
+					if(col!= '\n' and col!=' '):
+						mapL.append((ligne-1,colonne-1,col))
+					if(colG=='.'):
+						mapLG.append((ligne-1,colonne-1,colG))
+				colonne=colonne+1
+			ligne=ligne+1
+		self.initial=tuple(mapL)
+		self.stateGoal=tuple(mapLG)
+		self.size['line']=sizeL-2 #size without extern wall (-3 because of \n)
+		self.size['col']=sizeC-3
+		print(mapL)
+		print(mapLG) 
+		f.close
+		g.close
 		#print(startLetter)
 		#print(endLetter)
 
@@ -126,17 +129,17 @@ def printState(state):
 #####################
 # Launch the search #
 #####################
-start_time = time.time()  
-problem=NumberLink(sys.argv[1])
+#start_time = time.time()  
+problem=Sokoban(sys.argv[1])
 
 #example of bfs search
-node=breadth_first_graph_search(problem)
+#node=breadth_first_graph_search(problem)
 #node=depth_first_graph_search(problem)
 #example of print
-path=node.path()
-path.reverse()
-for n in path:
-	printState(n.state) #assuming that the __str__ function of states output the correct format
+#path=node.path()
+#path.reverse()
+#for n in path:
+#	printState(n.state) #assuming that the __str__ function of states output the correct format
 
-interval = time.time() - start_time  
-print('Total time in seconds:', interval )
+#interval = time.time() - start_time  
+#print('Total time in seconds:', interval )
