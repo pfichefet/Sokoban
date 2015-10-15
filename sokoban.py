@@ -65,9 +65,9 @@ class Sokoban(Problem):
 			for col,colG in zip(line,lineG):
 				if(colonne != 0 and colonne != sizeC-2 and ligne !=0 and ligne != sizeL-1):
 					if(col!= '\n' and col!=' '):
-						mapL.append((ligne-1,colonne-1,col))
+						mapL.append((col,ligne-1,colonne-1))
 					if(colG=='.'):
-						mapLG.append((ligne-1,colonne-1,colG))
+						mapLG.append((colG,ligne-1,colonne-1))
 				colonne=colonne+1
 			ligne=ligne+1
 		self.initial=tuple(mapL)
