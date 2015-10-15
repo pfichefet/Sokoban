@@ -116,6 +116,7 @@ def listToTuple(List):
 	return tuple(Tuple)	
 
 def heuristic(grid, stateGoal):
+	print(stateGoal)
 	littleMan = []
 	box = []
 	distManToBox = sys.maxsize
@@ -125,16 +126,19 @@ def heuristic(grid, stateGoal):
 			box.append((letter,line,col))
 		elif (letter == '@'):
 			littleMan.append(line)
-			littleMan.append(col)
-	print('littleMan =',littleMan)		
+			littleMan.append(col)		
 	for (letter,line,col) in box:
 		if(distManToBox >= abs(littleMan[0]-line)+abs(littleMan[1]-col)):
 			lineBox = line
 			colBox = col
-			distManToBox = abs(littleMan[0]-line)+abs(littleMan[1]-col)
-	for (point,letter,col) in stateGoal:
-		if(distBoxToTarget >= abs(lineBox-line)+abs(colBox-col)):
-			distBoxToTarget = abs(lineBox-line)+abs(colBox-col)
+			distManToBox = abs(littleMan[0]-line)+abs(littleMan[1]-col)-1 #-1 because we need to go next to the box not on the box
+			print(distManToBox)
+	for (point,goalLine,goalCol) in stateGoal:
+		if(distBoxToTarget >= abs(lineBox-goalLine)+abs(colBox-goalCol)):
+			if(lineBox == goalLine or colBox == goalCol):
+				distBoxToTarget = abs(lineBox-goalLine)+abs(colBox-goalCol)
+			else:
+				distBoxToTarget = abs(lineBox-goalLine)+abs(colBox-goalCol)+2 #need to go against an other side of the box
 	return distBoxToTarget+distManToBox
 
 
