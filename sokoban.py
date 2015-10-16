@@ -210,20 +210,20 @@ def stuckAgainstWall(grid,boxLine,boxCol):
 			if(diir[0] == 0):
 				while(newL < self.size[0]+2):
 					newL += 1
-					if(whatIsHere(grid,newL,newC) != 'wall' and whatIsHere(grid,newL,newC) != 'box')
+					if(whatIsHere(grid,newL,newC) != 'wall' and whatIsHere(grid,newL,newC) != 'box'):
 						return False
 				while(newL > 0):
 					newL -= 1
-					if(whatIsHere(grid,newL,newC) != 'wall' and whatIsHere(grid,newL,newC) != 'box')
+					if(whatIsHere(grid,newL,newC) != 'wall' and whatIsHere(grid,newL,newC) != 'box'):
 						return False
 			elif(diir[1] == 0):
 				while(newC < self.size[1]+2):
 					newL += 1
-					if(whatIsHere(grid,newL,newC) != 'wall' and whatIsHere(grid,newL,newC) != 'box')
+					if(whatIsHere(grid,newL,newC) != 'wall' and whatIsHere(grid,newL,newC) != 'box'):
 						return False
 				while(newC > 0):
 					newL -= 1
-					if(whatIsHere(grid,newL,newC) != 'wall' and whatIsHere(grid,newL,newC) != 'box')
+					if(whatIsHere(grid,newL,newC) != 'wall' and whatIsHere(grid,newL,newC) != 'box'):
 						return False
 	return True
 
