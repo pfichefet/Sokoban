@@ -161,6 +161,7 @@ def listToTuple(List):
 		Tuple.append(tuple(line))
 	return tuple(Tuple)	
 
+#check if how many boxes reach their goal
 def checkBoxOnEndPoint(grid):
 	boxReachGoal = []
 	state = list(grid[0])
