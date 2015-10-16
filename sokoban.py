@@ -45,12 +45,29 @@ class Sokoban(Problem):
 		for col,line in directions:
 			newL=ligne+line
 			newC=colonne+col
+			what=whatIsHere(grid,newL,newC)
 			if(canMove(grid,newL,newC,self.size,(line,col))):
+				where=0
+				if(what=='box'):
+					where=findBox(grid,newL,newC)
+					newLB=newL+line
+					newCB=newC+col
+					grid[where][1]=newLB
+					grid[where][2]=newCB
+
 				grid[i][1]=newL
 				grid[i][2]=newC
+
 				successors.append(((newL,newC),tuple(grid)))
 
+				grid[i][1]=ligne
+				grid[i][2]=colonne
+				if(what=='box'):
+					grid[where][1]=newL
+					grid[where][2]=newC
 
+
+#def whatIsHere(grid,ligne,colonne):
 #def canMove(grid,ligne,colonne,sizeMap,diir):
 #def moveChar(grid,newL,newC):
 #def heuristic(grid, stateGoal):
@@ -122,6 +139,14 @@ class Sokoban(Problem):
 ######################
 
 directions = [ [-1, 0], [1, 0], [0, -1], [0, 1] ]
+
+def findBox(grid,l,c):
+	i=0
+	for elem,line,col in grid:
+		if(l==line and c==col):
+			return i
+		i+=1
+
 
 def tupleToList(yuple):
 	llist = []
