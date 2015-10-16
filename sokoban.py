@@ -55,8 +55,8 @@ class Sokoban(Problem):
 				where=0
 
 				if(what=='box'):
-					if(blockCorner(grid,newL+line,newC+col,self.size,state[1]) ):
-						#or stuckAgainstWall(grid,newL+line,newC+col,self.size,state[1],(col,line))):
+					if(blockCorner(grid,newL+line,newC+col,self.size,state[1]) 
+						or stuckAgainstWall(grid,newL+line,newC+col,self.size,state[1],(col,line))):
 					#if(not stuckAgainstWall(grid,newL+line,newC+col,self.size)):
 						continue
 
@@ -264,32 +264,31 @@ def stuckAgainstWall(grid,boxLine,boxCol,size,goal,diir):
 
 		newL = boxLine+diir[1]
 		newC = boxCol+diir[0]
-		printState(grid,size[1]+2,size[0]+2)
-		print(diir)
 		if iswall(grid,newL,newC,size):
 			if(diir[1] == 0):
 				while(newL < size[0]):
-					if ('.',newL,boxCol) in goal or (not iswall(grid,newL,newC,size) and not iswall(grid,newL,newC-2*diir[0],size)):
+					if ('.',newL,boxCol) in goal or not iswall(grid,newL,newC,size):
 						return False
 					newL += 1
 				newL=boxLine-1
 				while(newL >= 0):
 
-					if ('.',newL,boxCol) in goal or (not iswall(grid,newL,newC,size) and not iswall(grid,newL,newC-2*diir[0],size)):
+					if ('.',newL,boxCol) in goal or not iswall(grid,newL,newC,size) :
 						return False
 					newL -= 1
 			elif(diir[0] == 0):
 				while(newC < size[1]):
-					if ('.',boxLine,newC) in goal or (not iswall(grid,newL,newC,size) and not iswall(grid,newL-2*diir[1],newC,size)):
+					if ('.',boxLine,newC) in goal or not iswall(grid,newL,newC,size) :
 						return False
 					newC += 1
 				newC=boxCol-1
 				while(newC >= 0):
-					if ('.',boxLine,newC) in goal or (not iswall(grid,newL,newC,size) and not iswall(grid,newL-2*diir[1],newC,size)):
+					if ('.',boxLine,newC) in goal or not iswall(grid,newL,newC,size) :
 						return False
 					newC -= 1
-		print('true')
-		return True
+			return True
+		else:
+			return False
 	else:
 		return False
 
