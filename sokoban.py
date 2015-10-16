@@ -47,7 +47,7 @@ class Sokoban(Problem):
 			if(canMove(grid,newL,newC,self.size,(line,col))):
 				grid[i][1]=newL
 				grid[i][2]=newC
-				successors.append((newL,newC),tuple(grid))
+				successors.append(((newL,newC),tuple(grid)))
 
 
 #def canMove(grid,ligne,colonne,sizeMap,diir):
@@ -77,7 +77,6 @@ class Sokoban(Problem):
 		# 			successors.append( (diir,nextState  ) )
 		# 		grid[nextline][nextcol] = '.'
 		# return tuple(successors)
-		pass
 
 	def createMap(self,path):
 		mapL=[]
@@ -176,6 +175,7 @@ def canMove(grid,ligne,colonne,sizeMap,diir):
 			return True
 	else:
 		return True
+
 
 #si touche 2 mur, cas useless (test pas encore si ya une boite qui bloque (vu quon peut ptet la bouger))
 def blockCorner(grid,ligne,colonne,sizeMap):
