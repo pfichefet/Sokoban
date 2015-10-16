@@ -11,18 +11,19 @@ from search import *
 #################
 class Sokoban(Problem):
 	def __init__(self, init):
-		self.stateGoal = []
 		self.size = ()
 		self.start=()
 		self.createMap(init)
 		pass
 	
 	def goal_test(self, state):
+		currentState = state[0]
+		stateGoal = state[1]
 		boxEndingState = 0
-		NumberOfEndingPoint = len(self.stateGoal)
-		for (letter,line,col) in state[1]:
+		NumberOfEndingPoint = len(stateGoal)
+		for (letter,line,col) in currentState:
 			if (letter == '$'):
-				for (point,endLine,endCol) in self.stateGoal:
+				for (point,endLine,endCol) in stateGoal:
 					if(line == endLine and col == endCol):
 						boxEndingState += 1
 						break
@@ -34,7 +35,7 @@ class Sokoban(Problem):
 	def successor(self, state): #state = (  ( (currentLisLetter),(currentPointLine,currentPointCol) ),(grid)  )
 		successors = []
 		i=0
-		grid=list(state[1])
+		grid=list(state[1][0])
 		for elem,line,col in grid:
 			if(elem =='@'):
 				break;
@@ -103,10 +104,9 @@ class Sokoban(Problem):
 						mapLG.append((colG,ligne-1,colonne-1))
 				colonne=colonne+1
 			ligne=ligne+1
-		self.initial=((0,0),tuple(mapL))
-		self.stateGoal=tuple(mapLG)
+		self.initial=((0,0),(tuple(mapL),tuple(mapLG)))
 		self.size=(sizeL-2,sizeC-2) #[0 ... sizeC-2]
-		print('heuristic =', heuristic(tuple(mapL),self.stateGoal))
+		print('heuristic =', heuristic((tuple(mapL),tuple(mapLG)))
 		print(mapL)
 		print(mapLG) 
 		print(sizeL,sizeC)
@@ -135,31 +135,41 @@ def listToTuple(List):
 		Tuple.append(tuple(line))
 	return tuple(Tuple)	
 
-def heuristic(grid, stateGoal):
-	print(stateGoal)
+def heuristic(grid):
+	state = list(grid[0])
+	stateGoal = list(grid[1])
 	littleMan = []
 	box = []
 	distManToBox = sys.maxsize
-	distBoxToTarget = sys.maxsize
-	for (letter,line,col) in grid:
+	closestGoal = ()
+	distAllBoxToAllTarget = 0
+
+	for (letter,line,col) in state:
 		if (letter == '$'):
 			box.append((letter,line,col))
 		elif (letter == '@'):
 			littleMan.append(line)
-			littleMan.append(col)		
+			littleMan.append(col)	
+
 	for (letter,line,col) in box:
-		if(distManToBox >= abs(littleMan[0]-line)+abs(littleMan[1]-col)):
-			lineBox = line
-			colBox = col
+		if(distManToBox >= abs(littleMan[0]-line)+abs(littleMan[1]-col)-1)):
 			distManToBox = abs(littleMan[0]-line)+abs(littleMan[1]-col)-1 #-1 because we need to go next to the box not on the box
-			print(distManToBox)
-	for (point,goalLine,goalCol) in stateGoal:
-		if(distBoxToTarget >= abs(lineBox-goalLine)+abs(colBox-goalCol)):
-			if(lineBox == goalLine or colBox == goalCol):
-				distBoxToTarget = abs(lineBox-goalLine)+abs(colBox-goalCol)
-			else:
-				distBoxToTarget = abs(lineBox-goalLine)+abs(colBox-goalCol)+2 #need to go against an other side of the box
-	return distBoxToTarget+distManToBox
+	
+	print(distManToBox)
+		
+	for (letter,line,col) in box:
+		distBoxToTarget = sys.maxsize
+		for (point,goalLine,goalCol) in stateGoal:
+			if(distBoxToTarget >= abs(line-goalLine)+abs(col-goalCol)):
+				if(lineBox == goalLine or colBox == goalCol):
+					distBoxToTarget = abs(lineBox-goalLine)+abs(colBox-goalCol)
+				else:
+					distBoxToTarget = abs(lineBox-goalLine)+abs(colBox-goalCol)+2 #need to go against an other side of the box
+				closestGoal = (point,goalLine,goalCol)
+		stateGoal.remove(closestGoal)		
+		distAllBoxToAllTarget += distBoxToTarget
+
+	return distManToBox+distAllBoxToAllTarget
 
 def canMove(grid,ligne,colonne,sizeMap,diir):
 	what=whatIsHere(grid,ligne,colonne)
