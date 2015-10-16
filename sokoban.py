@@ -13,7 +13,7 @@ from search import *
 class Sokoban(Problem):
 	def __init__(self, init):
 		self.stateGoal = []
-		self.size = {}
+		self.size = ()
 		self.start=()
 		self.createMap(init)
 		pass
@@ -21,7 +21,7 @@ class Sokoban(Problem):
 	def goal_test(self, state):
 		boxEndingState = 0
 		NumberOfEndingPoint = len(self.stateGoal)
-		for (letter,line,col) in state:
+		for (letter,line,col) in state[1]:
 			if (letter == '$'):
 				for (point,endLine,endCol) in self.stateGoal:
 					if(line == endLine and col == endCol):
@@ -33,7 +33,25 @@ class Sokoban(Problem):
 			return False
 	
 	def successor(self, state): #state = (  ( (currentLisLetter),(currentPointLine,currentPointCol) ),(grid)  )
-		# successors = []
+		successors = []
+		i=0
+		grid=state[1]
+		for elem,line,col in grid:
+			if(elem =='@'):
+				break;
+			i+=1
+		ligne=grid[i][1]
+		colonne=grid[i][2]
+		for col,line in directions:
+			newL=ligne+line
+			newC=colonne+col
+			if(canMove(grid,newL,newC,))
+
+
+#def canMove(grid,ligne,colonne,sizeMap,diir):
+#def moveChar(grid,newL,newC):
+#def heuristic(grid, stateGoal):
+#def blockCorner(grid,ligne,colonne,sizeMap):
 		# currentListLetter = state[0][0]
 		# currentLetter = state[0][0][0]
 		# currentStartPoint = state[0][1]
@@ -84,10 +102,9 @@ class Sokoban(Problem):
 						mapLG.append((colG,ligne-1,colonne-1))
 				colonne=colonne+1
 			ligne=ligne+1
-		self.initial=tuple(mapL)
+		self.initial=((0,0),tuple(mapL))
 		self.stateGoal=tuple(mapLG)
-		self.size['line']=sizeL-2 #[0 ... sizeC-2]
-		self.size['col']=sizeC-2
+		self.size=(sizeL-2,sizeC-2) #[0 ... sizeC-2]
 		print('heuristic =', heuristic(tuple(mapL),self.stateGoal))
 		print(mapL)
 		print(mapLG) 
@@ -143,6 +160,20 @@ def heuristic(grid, stateGoal):
 				distBoxToTarget = abs(lineBox-goalLine)+abs(colBox-goalCol)+2 #need to go against an other side of the box
 	return distBoxToTarget+distManToBox
 
+def canMove(grid,ligne,colonne,sizeMap,diir):
+	what=whatIsHere(grid,ligne,colonne)
+	if what=='wall' or not inBounds(grid,(ligne,colonne),sizeMap):
+		return False
+	if what=='box':
+		newL=ligne+diir[0]
+		newC=colonne+diir[1]
+		what2=whatIsHere(grid,newL,newC)
+		if what2=='wall' or what2=='box' or not inBounds(grid,(newL,newC),sizeMap):
+			return False
+		else:
+			return True
+	else:
+		return True
 
 #si touche 2 mur, cas useless (test pas encore si ya une boite qui bloque (vu quon peut ptet la bouger))
 def blockCorner(grid,ligne,colonne,sizeMap):
@@ -204,7 +235,7 @@ def inBounds(grid, pos,sizeMap):
 	return 0 <= pos[0] and pos[0] < sizeMap[0] and 0 <= pos[1] and pos[1] < sizeMap[1]
 
 #mettre colonne+2 et ligne +2 ou sizeC sizeL du createmap (donc VRAI TAILLE AVEC MUR EXTERNE)
-def printState(state,colonne,ligne):
+def printState(grid,colonne,ligne):
 	i=0
 	flligne=""
 	while(i<colonne):
@@ -215,9 +246,9 @@ def printState(state,colonne,ligne):
 	l[0]='#'
 	l[colonne-1]='#'
 	tempL=1
-	sizestate=len(state)
+	sizestate=len(grid)
 	last=1
-	for e in state:
+	for e in grid:
 		line=e[1]
 		col=e[2]
 		elem=e[0]
