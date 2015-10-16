@@ -328,7 +328,7 @@ start_time = time.time()
 problem=Sokoban(sys.argv[1])
 
 node=astar_graph_search(problem,heuristic)
-#node=depth_first_graph_search(problem)
+#node=breadth_first_graph_search(problem)
 
 path=node.path()
 path.reverse()
