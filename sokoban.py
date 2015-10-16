@@ -203,10 +203,10 @@ def blockCorner(grid,ligne,colonne,sizeMap):
 	else:
 		return False
 
-def stuckAgainstWall(grid,currentLine,currentCol):
+def stuckAgainstWall(grid,boxLine,boxCol):
 	for diir in directions:
-		newL = currentLine+diir[0]
-		newC = currentCol+diir[1]
+		newL = boxLine+diir[0]
+		newC = boxCol+diir[1]
 		if(whatIsHere(grid,newL,newC) == 'wall'):
 			if(diir[0] == 0):
 				while(newL < self.size[0]+2):
