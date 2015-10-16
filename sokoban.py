@@ -11,7 +11,6 @@ from search import *
 # Problem class #
 #################
 
-
 class Sokoban(Problem):
 	def __init__(self, init):
 		self.size = ()
@@ -79,37 +78,6 @@ class Sokoban(Problem):
 
 		return tuple(successors)
 
-#def stuckAgainstWall(grid,boxLine,boxCol):
-#def blockCorner(grid,ligne,colonne,sizeMap):
-#def whatIsHere(grid,ligne,colonne):
-#def canMove(grid,ligne,colonne,sizeMap,diir):
-#def moveChar(grid,newL,newC):
-#def heuristic(grid, stateGoal):
-#def blockCorner(grid,ligne,colonne,sizeMap):
-		# currentListLetter = state[0][0]
-		# currentLetter = state[0][0][0]
-		# currentStartPoint = state[0][1]
-		# grid = tupleToList(state[1])
-		# for elem in self.end:
-		# 	if elem[0] == currentLetter:
-		# 		currentEndPoint = (elem[1],elem[2])
-		# 		break 		
-		# choice = chooseLetter(grid,currentLetter,currentStartPoint,currentEndPoint,currentListLetter,self.start,self.end)
-		# currentListLetter = choice[0] #ChooseLetter check if we need to change the current letter or not.			
-		# currentLetter = choice[0][0]  
-		# currentStartPoint = choice[1]
-		# currentEndPoint = choice[2]		
-		# for diir in directions:
-		# 	nextline = currentStartPoint[0]+diir[1]
-		# 	nextcol = currentStartPoint[1]+diir[0]
-		# 	if(pathExists(grid,[nextline,nextcol],currentEndPoint) and grid[nextline][nextcol]=='.'):
-		# 		grid[nextline][nextcol] = currentLetter
-		# 		if(possible(grid,self.start,self.end,list(currentListLetter),currentLetter,(nextline,nextcol))):
-		# 			nextState = ((currentListLetter,(nextline,nextcol)),listToTuple(grid))
-		# 			successors.append( (diir,nextState  ) )
-		# 		grid[nextline][nextcol] = '.'
-		# return tuple(successors)
-
 	def createMap(self,path):
 		mapL=[]
 		mapLG=[]
@@ -137,10 +105,8 @@ class Sokoban(Problem):
 			ligne=ligne+1
 		self.initial=((tuple(mapL),tuple(mapLG),(sizeL,sizeC)))
 		self.size=(sizeL-2,sizeC-2) #[0 ... sizeC-2]
-		#print('heuristic =', heuristic((tuple(mapL),tuple(mapLG))))
 		f.close
 		g.close
-
 
 ###################### 
 # Auxiliary function #
@@ -300,28 +266,8 @@ def whatIsHere(grid,ligne,colonne):
 				return 'box'
 			elif e[0] =='#':
 				return 'wall'
-			else:
-				return 'us' #probably useless
 	return 'nothing'
 
-def pathExists(grid, start, end):
-	visited = [ [0 for j in range(0, len(grid[0]))] for i in range(0, len(grid)) ]
-	ok = pathExistsDFS(grid, start, end, visited)
-	return ok
-
-def pathExistsDFS(grid, start, end, visited):
-	for d in directions:
-		i = start[0] + d[0]
-		j = start[1] + d[1]
-		next = [i, j]
-		if i == end[0] and j == end[1]:
-			return True
-		if inBounds(grid, next) and grid[i][j] == '.' and not visited[i][j]:
-			visited[i][j] = 1
-			exists = pathExistsDFS(grid, next, end, visited)
-			if exists:
-				return True
-	return False
 
 #verifie si on est dans la map sans mur externe (ligne,colonne)
 def inBounds(grid, pos,sizeMap):
@@ -346,7 +292,6 @@ def printState(grid,colonne,ligne):
 		line=e[1]
 		col=e[2]
 		elem=e[0]
-		#print(elem,line,col)
 		if line+1>tempL:
 			print(''.join(l))
 			j=tempL
@@ -367,7 +312,6 @@ def printState(grid,colonne,ligne):
 			if(last==sizestate):
 				print(''.join(l))
 		last+=1
-	#j=state[sizestate-1][1]
 	j=tempL
 	l=[' ']*colonne
 	l[0]='#'
@@ -391,8 +335,8 @@ path.reverse()
 nNode=0
 for n in path:
 	nNode+=1
-	printState(n.state[0],n.state[2][1],n.state[2][0]) #assuming that the __str__ function of states output the correct format
+	printState(n.state[0],n.state[2][1],n.state[2][0]) 
 
 interval = time.time() - start_time 
-print("number of node : %d" % nNode) 
+print("number of node (for solution): %d" % nNode) 
 print('Total time in seconds:', interval )
