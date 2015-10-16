@@ -164,6 +164,8 @@ def blockCorner(grid,ligne,colonne,sizeMap):
 	elif count==2:
 		if (ud==2 or lr==2):
 			return False
+		else:
+			return True
 	else:
 		return False
 #Mettre coordonnee sans mur exterieur (je pense)
