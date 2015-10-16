@@ -35,7 +35,7 @@ class Sokoban(Problem):
 	def successor(self, state): #state = (  ( (currentLisLetter),(currentPointLine,currentPointCol) ),(grid)  )
 		successors = []
 		i=0
-		grid=list(state[1][0])
+		grid=list(state[0])
 		for elem,line,col in grid:
 			if(elem =='@'):
 				break;
@@ -58,13 +58,15 @@ class Sokoban(Problem):
 				grid[i][1]=newL
 				grid[i][2]=newC
 
-				successors.append(((newL,newC),tuple(grid)))
+				successors.append(((newL,newC),(tuple(grid),state[1])))
 
 				grid[i][1]=ligne
 				grid[i][2]=colonne
 				if(what=='box'):
 					grid[where][1]=newL
 					grid[where][2]=newC
+
+		return tuple(successors)
 
 
 #def whatIsHere(grid,ligne,colonne):
