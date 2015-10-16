@@ -147,14 +147,23 @@ def heuristic(grid, stateGoal):
 #si touche 2 mur, cas useless (test pas encore si ya une boite qui bloque (vu quon peut ptet la bouger))
 def blockCorner(grid,ligne,colonne,sizeMap):
 	count=0 
+	lr=0
+	ud=0
 	for col,line in directions:
 		newL=ligne+line
 		newC=colonne+col
 		what=whatIsHere(grid,newL,newC)
 		if what=='wall' or not (inBounds(grid,(newL,newC),sizeMap)):
 			count+=1
+			if(line!=0):
+				ud+=1
+			elif(col!=0):
+				lr+=1
 	if count>2: # > 2 et pas >= car le bloc n'est bloqué que si les 2 mur qui le touchent, touchent des côté adjacent.	
 		return True
+	elif count==2:
+		if (ud==2 or lr==2):
+			return False
 	else:
 		return False
 #Mettre coordonnee sans mur exterieur (je pense)
