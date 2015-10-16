@@ -51,6 +51,7 @@ class Sokoban(Problem):
 			what=whatIsHere(grid,newL,newC)
 			if(canMove(grid,newL,newC,self.size,(line,col))):
 				where=0
+
 				if(what=='box'):
 					where=findBox(grid,newL,newC)
 					newLB=newL+line
@@ -60,7 +61,8 @@ class Sokoban(Problem):
 
 				grid[i][1]=newL
 				grid[i][2]=newC
-				successors.append(((newL,newC),(listToTuple(grid),state[1],(self.size[0]+2,self.size[1]+2))))
+				nextState=(listToTuple(grid),state[1],(self.size[0]+2,self.size[1]+2))
+				successors.append(((newL,newC),nextState))
 
 				grid[i][1]=ligne
 				grid[i][2]=colonne
@@ -326,6 +328,7 @@ def printState(grid,colonne,ligne):
 		line=e[1]
 		col=e[2]
 		elem=e[0]
+		#print(elem,line,col)
 		if line+1>tempL:
 			print(''.join(l))
 			j=tempL
@@ -368,6 +371,7 @@ node=astar_graph_search(problem,heuristic)
 path=node.path()
 path.reverse()
 for n in path:
+	print(n.state)
 	printState(n.state[0],n.state[2][1],n.state[2][0]) #assuming that the __str__ function of states output the correct format
 
 interval = time.time() - start_time  
