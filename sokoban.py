@@ -1,5 +1,5 @@
 'Fichefet Pierrick 26631000'
-'Daubry Benjamin 307210000'
+'Daubry Benjamin 307910000'
 'Goupe #16'
 import time
 import sys
@@ -9,7 +9,6 @@ from search import *
 #################  
 # Problem class #
 #################
-
 class Sokoban(Problem):
 	def __init__(self, init):
 		self.stateGoal = []
