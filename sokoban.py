@@ -9,6 +9,8 @@ from search import *
 #################  
 # Problem class #
 #################
+
+
 class Sokoban(Problem):
 	def __init__(self, init):
 		self.size = ()
@@ -17,7 +19,7 @@ class Sokoban(Problem):
 		pass
 	
 	def goal_test(self, state):
-		currentState = state[0]
+		currentState = tupleToList(state[0])
 		stateGoal = state[1]
 		boxEndingState = 0
 		NumberOfEndingPoint = len(stateGoal)
@@ -35,7 +37,8 @@ class Sokoban(Problem):
 	def successor(self, state): #state = (  ( (currentLisLetter),(currentPointLine,currentPointCol) ),(grid)  )
 		successors = []
 		i=0
-		grid=list(state[0])
+		#state=state[1]
+		grid=tupleToList(state[0])
 		for elem,line,col in grid:
 			if(elem =='@'):
 				break;
@@ -57,8 +60,7 @@ class Sokoban(Problem):
 
 				grid[i][1]=newL
 				grid[i][2]=newC
-
-				successors.append(((newL,newC),(tuple(grid),state[1])))
+				successors.append(((newL,newC),(listToTuple(grid),state[1],(self.size[0]+2,self.size[1]+2))))
 
 				grid[i][1]=ligne
 				grid[i][2]=colonne
@@ -123,9 +125,9 @@ class Sokoban(Problem):
 						mapLG.append((colG,ligne-1,colonne-1))
 				colonne=colonne+1
 			ligne=ligne+1
-		self.initial=((0,0),(tuple(mapL),tuple(mapLG)))
+		self.initial=((tuple(mapL),tuple(mapLG),(sizeL,sizeC)))
 		self.size=(sizeL-2,sizeC-2) #[0 ... sizeC-2]
-		print('heuristic =', heuristic((tuple(mapL),tuple(mapLG))))
+		#print('heuristic =', heuristic((tuple(mapL),tuple(mapLG))))
 		print(mapL)
 		print(mapLG) 
 		print(sizeL,sizeC)
@@ -166,13 +168,15 @@ def checkBoxOnEndPoint(grid):
 	boxReachGoal = []
 	state = list(grid[0])
 	stateGoal = list(grid[1])
-	for (letter,line,col) in state:
+	for letter,line,col in state:
 		if(letter == '$'):
 			if ('.',line,col) not in stateGoal:
 				boxReachGoal.append((letter,line,col))
 	return boxReachGoal	
 
+
 def heuristic(grid):
+	grid=grid.state
 	state = list(grid[0])
 	stateGoal = list(grid[1])
 	littleMan = []
@@ -355,16 +359,16 @@ def printState(grid,colonne,ligne):
 #####################
 # Launch the search #
 #####################
-#start_time = time.time()  
+start_time = time.time()  
 problem=Sokoban(sys.argv[1])
 #example of bfs search
-#node=breadth_first_graph_search(problem)
+node=astar_graph_search(problem,heuristic)
 #node=depth_first_graph_search(problem)
 #example of print
-#path=node.path()
-#path.reverse()
-#for n in path:
-#	printState(n.state) #assuming that the __str__ function of states output the correct format
+path=node.path()
+path.reverse()
+for n in path:
+	printState(n.state[0],n.state[2][1],n.state[2][0]) #assuming that the __str__ function of states output the correct format
 
-#interval = time.time() - start_time  
-#print('Total time in seconds:', interval )
+interval = time.time() - start_time  
+print('Total time in seconds:', interval )
