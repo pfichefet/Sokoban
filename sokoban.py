@@ -199,8 +199,34 @@ def blockCorner(grid,ligne,colonne,sizeMap):
 			return True
 	else:
 		return False
+
+def stuckAgainstWall(grid,currentLine,currentCol):
+	for diir in directions:
+		newL = currentLine+diir[0]
+		newC = currentCol+diir[1]
+		if(whatIsHere(grid,newL,newC) == 'wall'):
+			if(diir[0] == 0):
+				while(newL < self.size[0]+2):
+					newL += 1
+					if(whatIsHere(grid,newL,newC) != 'wall' and whatIsHere(grid,newL,newC) != 'box')
+						return False
+				while(newL > 0):
+					newL -= 1
+					if(whatIsHere(grid,newL,newC) != 'wall' and whatIsHere(grid,newL,newC) != 'box')
+						return False
+			elif(diir[1] == 0):
+				while(newC < self.size[1]+2):
+					newL += 1
+					if(whatIsHere(grid,newL,newC) != 'wall' and whatIsHere(grid,newL,newC) != 'box')
+						return False
+				while(newC > 0):
+					newL -= 1
+					if(whatIsHere(grid,newL,newC) != 'wall' and whatIsHere(grid,newL,newC) != 'box')
+						return False
+	return True
+
 #Mettre coordonnee sans mur exterieur (je pense)
-def whatIsHere(grid,ligne, colonne):
+def whatIsHere(grid,ligne,colonne):
 	for e in grid:
 		if ligne==e[1] and colonne==e[2]:
 			if e[0] == '$':
