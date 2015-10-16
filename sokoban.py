@@ -125,7 +125,7 @@ class Sokoban(Problem):
 			ligne=ligne+1
 		self.initial=((0,0),(tuple(mapL),tuple(mapLG)))
 		self.size=(sizeL-2,sizeC-2) #[0 ... sizeC-2]
-		print('heuristic =', heuristic((tuple(mapL),tuple(mapLG)))
+		print('heuristic =', heuristic((tuple(mapL),tuple(mapLG))))
 		print(mapL)
 		print(mapLG) 
 		print(sizeL,sizeC)
@@ -167,6 +167,7 @@ def heuristic(grid):
 	stateGoal = list(grid[1])
 	littleMan = []
 	box = []
+	needToChangeDirection = 0
 	distManToBox = sys.maxsize
 	closestGoal = ()
 	distAllBoxToAllTarget = 0
@@ -179,24 +180,20 @@ def heuristic(grid):
 			littleMan.append(col)	
 
 	for (letter,line,col) in box:
-		if(distManToBox >= abs(littleMan[0]-line)+abs(littleMan[1]-col)-1)):
+		if(distManToBox >= abs(littleMan[0]-line)+abs(littleMan[1]-col)-1):
 			distManToBox = abs(littleMan[0]-line)+abs(littleMan[1]-col)-1 #-1 because we need to go next to the box not on the box
-	
-	print(distManToBox)
 		
 	for (letter,line,col) in box:
 		distBoxToTarget = sys.maxsize
 		for (point,goalLine,goalCol) in stateGoal:
 			if(distBoxToTarget >= abs(line-goalLine)+abs(col-goalCol)):
-				if(lineBox == goalLine or colBox == goalCol):
-					distBoxToTarget = abs(lineBox-goalLine)+abs(colBox-goalCol)
-				else:
-					distBoxToTarget = abs(lineBox-goalLine)+abs(colBox-goalCol)+2 #need to go against an other side of the box
-				closestGoal = (point,goalLine,goalCol)
+				distBoxToTarget = abs(line-goalLine)+abs(col-goalCol)
+				if(line != goalLine and col != goalCol):
+					needToChangeDirection += 1	
+				closestGoal = (point,goalLine,goalCol)		
 		stateGoal.remove(closestGoal)		
 		distAllBoxToAllTarget += distBoxToTarget
-
-	return distManToBox+distAllBoxToAllTarget
+	return distManToBox+distAllBoxToAllTarget+(needToChangeDirection*2)
 
 def canMove(grid,ligne,colonne,sizeMap,diir):
 	what=whatIsHere(grid,ligne,colonne)
