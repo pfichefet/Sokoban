@@ -149,7 +149,6 @@ def findBox(grid,l,c):
 			return i
 		i+=1
 
-
 def tupleToList(yuple):
 	llist = []
 	for line in yuple:
@@ -162,22 +161,31 @@ def listToTuple(List):
 		Tuple.append(tuple(line))
 	return tuple(Tuple)	
 
+def checkBoxOnEndPoint(grid):
+	boxReachGoal = []
+	state = list(grid[0])
+	stateGoal = list(grid[1])
+	for (letter,line,col) in state:
+		if(letter == '$'):
+			if ('.',line,col) not in stateGoal:
+				boxReachGoal.append((letter,line,col))
+	return boxReachGoal	
+
 def heuristic(grid):
 	state = list(grid[0])
 	stateGoal = list(grid[1])
 	littleMan = []
-	box = []
 	needToChangeDirection = 0
 	distManToBox = sys.maxsize
 	closestGoal = ()
 	distAllBoxToAllTarget = 0
+	box = checkBoxOnEndPoint(grid)
 
 	for (letter,line,col) in state:
-		if (letter == '$'):
-			box.append((letter,line,col))
-		elif (letter == '@'):
+		if (letter == '@'):
 			littleMan.append(line)
 			littleMan.append(col)	
+			break
 
 	for (letter,line,col) in box:
 		if(distManToBox >= abs(littleMan[0]-line)+abs(littleMan[1]-col)-1):
@@ -209,7 +217,6 @@ def canMove(grid,ligne,colonne,sizeMap,diir):
 			return True
 	else:
 		return True
-
 
 #si touche 2 mur, cas useless (test pas encore si ya une boite qui bloque (vu quon peut ptet la bouger))
 def blockCorner(grid,ligne,colonne,sizeMap):
