@@ -3,6 +3,7 @@
 'Goupe #16'
 import time
 import sys
+import operator
 from os import listdir,system
 from search import *
 
@@ -36,6 +37,7 @@ class Sokoban(Problem):
 	
 	def successor(self, state): #state = (  ( (currentLisLetter),(currentPointLine,currentPointCol) ),(grid)  )
 		successors = []
+
 		i=0
 		#state=state[1]
 		grid=tupleToList(state[0])
@@ -53,6 +55,11 @@ class Sokoban(Problem):
 				where=0
 
 				if(what=='box'):
+					if(blockCorner(grid,newL+line,newC+col,self.size,state[1]) ):
+						#or stuckAgainstWall(grid,newL+line,newC+col,self.size,state[1],(col,line))):
+					#if(not stuckAgainstWall(grid,newL+line,newC+col,self.size)):
+						continue
+
 					where=findBox(grid,newL,newC)
 					newLB=newL+line
 					newCB=newC+col
@@ -72,7 +79,8 @@ class Sokoban(Problem):
 
 		return tuple(successors)
 
-
+#def stuckAgainstWall(grid,boxLine,boxCol):
+#def blockCorner(grid,ligne,colonne,sizeMap):
 #def whatIsHere(grid,ligne,colonne):
 #def canMove(grid,ligne,colonne,sizeMap,diir):
 #def moveChar(grid,newL,newC):
@@ -130,12 +138,6 @@ class Sokoban(Problem):
 		self.initial=((tuple(mapL),tuple(mapLG),(sizeL,sizeC)))
 		self.size=(sizeL-2,sizeC-2) #[0 ... sizeC-2]
 		#print('heuristic =', heuristic((tuple(mapL),tuple(mapLG))))
-		print(mapL)
-		print(mapLG) 
-		print(sizeL,sizeC)
-		uh=blockCorner(mapL,0,1,(sizeL-2,sizeC-2))
-		print(uh)
-		printState(mapL,sizeC,sizeL)
 		f.close
 		g.close
 
@@ -226,7 +228,7 @@ def canMove(grid,ligne,colonne,sizeMap,diir):
 		return True
 
 #si touche 2 mur, cas useless (test pas encore si ya une boite qui bloque (vu quon peut ptet la bouger))
-def blockCorner(grid,ligne,colonne,sizeMap):
+def blockCorner(grid,ligne,colonne,sizeMap,goal):
 	count=0 
 	lr=0
 	ud=0
@@ -234,12 +236,16 @@ def blockCorner(grid,ligne,colonne,sizeMap):
 		newL=ligne+line
 		newC=colonne+col
 		what=whatIsHere(grid,newL,newC)
-		if what=='wall' or not (inBounds(grid,(newL,newC),sizeMap)):
-			count+=1
-			if(line!=0):
-				ud+=1
-			elif(col!=0):
-				lr+=1
+
+		if (('.',ligne,colonne) not in goal):
+		 	if(what=='wall' or not (inBounds(grid,(newL,newC),sizeMap))):
+		 		count+=1
+		 		if(line!=0):
+		 			ud+=1
+		 		elif(col!=0):
+		 			lr+=1
+		else:
+			return False
 	if count>2: # > 2 et pas >= car le bloc n'est bloqué que si les 2 mur qui le touchent, touchent des côté adjacent.	
 		return True
 	elif count==2:
@@ -250,30 +256,42 @@ def blockCorner(grid,ligne,colonne,sizeMap):
 	else:
 		return False
 
-def stuckAgainstWall(grid,boxLine,boxCol):
-	for diir in directions:
-		newL = boxLine+diir[0]
-		newC = boxCol+diir[1]
-		if(whatIsHere(grid,newL,newC) == 'wall'):
-			if(diir[0] == 0):
-				while(newL < self.size[0]+2):
+def iswall(grid,newL,newC,size):
+	return whatIsHere(grid,newL,newC) == 'wall' or not (inBounds(grid,(newL,newC),size))
+
+def stuckAgainstWall(grid,boxLine,boxCol,size,goal,diir):
+	if('.',boxLine,boxCol) not in goal:
+
+		newL = boxLine+diir[1]
+		newC = boxCol+diir[0]
+		printState(grid,size[1]+2,size[0]+2)
+		print(diir)
+		if iswall(grid,newL,newC,size):
+			if(diir[1] == 0):
+				while(newL < size[0]):
+					if ('.',newL,boxCol) in goal or (not iswall(grid,newL,newC,size) and not iswall(grid,newL,newC-2*diir[0],size)):
+						return False
 					newL += 1
-					if(whatIsHere(grid,newL,newC) != 'wall' and whatIsHere(grid,newL,newC) != 'box'):
+				newL=boxLine-1
+				while(newL >= 0):
+
+					if ('.',newL,boxCol) in goal or (not iswall(grid,newL,newC,size) and not iswall(grid,newL,newC-2*diir[0],size)):
 						return False
-				while(newL > 0):
 					newL -= 1
-					if(whatIsHere(grid,newL,newC) != 'wall' and whatIsHere(grid,newL,newC) != 'box'):
+			elif(diir[0] == 0):
+				while(newC < size[1]):
+					if ('.',boxLine,newC) in goal or (not iswall(grid,newL,newC,size) and not iswall(grid,newL-2*diir[1],newC,size)):
 						return False
-			elif(diir[1] == 0):
-				while(newC < self.size[1]+2):
-					newL += 1
-					if(whatIsHere(grid,newL,newC) != 'wall' and whatIsHere(grid,newL,newC) != 'box'):
+					newC += 1
+				newC=boxCol-1
+				while(newC >= 0):
+					if ('.',boxLine,newC) in goal or (not iswall(grid,newL,newC,size) and not iswall(grid,newL-2*diir[1],newC,size)):
 						return False
-				while(newC > 0):
-					newL -= 1
-					if(whatIsHere(grid,newL,newC) != 'wall' and whatIsHere(grid,newL,newC) != 'box'):
-						return False
-	return True
+					newC -= 1
+		print('true')
+		return True
+	else:
+		return False
 
 #Mettre coordonnee sans mur exterieur (je pense)
 def whatIsHere(grid,ligne,colonne):
@@ -314,6 +332,7 @@ def inBounds(grid, pos,sizeMap):
 def printState(grid,colonne,ligne):
 	i=0
 	flligne=""
+	grid=sorted(grid, key=lambda colonnes: colonnes[1])
 	while(i<colonne):
 		flligne+='#'
 		i+=1
@@ -364,15 +383,17 @@ def printState(grid,colonne,ligne):
 #####################
 start_time = time.time()  
 problem=Sokoban(sys.argv[1])
-#example of bfs search
+
 node=astar_graph_search(problem,heuristic)
 #node=depth_first_graph_search(problem)
-#example of print
+
 path=node.path()
 path.reverse()
+nNode=0
 for n in path:
-	print(n.state)
+	nNode+=1
 	printState(n.state[0],n.state[2][1],n.state[2][0]) #assuming that the __str__ function of states output the correct format
 
-interval = time.time() - start_time  
+interval = time.time() - start_time 
+print("number of node : %d" % nNode) 
 print('Total time in seconds:', interval )
