@@ -327,16 +327,36 @@ def printState(grid,colonne,ligne):
 start_time = time.time()  
 problem=Sokoban(sys.argv[1])
 
-node=astar_graph_search(problem,heuristic)
-#node=breadth_first_graph_search(problem)
+#node=astar_graph_search(problem,heuristic)
+node=breadth_first_graph_search(problem)
 
-path=node.path()
+path=node[0].path()
 path.reverse()
 nNode=0
+nNodeV=node[1]
+nNodeV2=node[2]
 for n in path:
 	nNode+=1
 	printState(n.state[0],n.state[2][1],n.state[2][0]) 
 
 interval = time.time() - start_time 
 print("number of node (for solution): %d" % nNode) 
+print("number of node visited: %d" % nNodeV) 
+print("number of node visited2: %d" % nNodeV2) 
 print('Total time in seconds:', interval )
+
+
+#SokoInst01 (Astar : nNodeVisited:18830 nNodeVisited2:6358 nNodeToSoluce:15 Time:0.446) 
+		   #(Breadth : nNodeVisited:1847 nNodeVisited2:842 nNodeToSoluce:15 Time:0.031)
+
+#SokoInst02 (Astar : nNodeVisited:34874 nNodeVisited2:15006 nNodeToSoluce:65 Time:1.342) 
+		   #(Breadth : nNodeVisited:9079 nNodeVisited2:3941 nNodeToSoluce:65 Time:0.264)
+
+#SokoInst07 (Astar : nNodeVisited:4369 nNodeVisited2:1921 nNodeToSoluce:98 Time:0.346) 
+		   #(Breadth : nNodeVisited:4136 nNodeVisited2:1837 nNodeToSoluce:98 Time:0.279)
+
+#SokoInst08 (Astar : nNodeVisited:7448 nNodeVisited2:3495 nNodeToSoluce:90 Time:0.49) 
+		   #(Breadth : nNodeVisited:7419 nNodeVisited2:3489 nNodeToSoluce:90 Time:0.387)
+
+#SokoInst15 (Astar : nNodeVisited:155626 nNodeVisited2:62312 nNodeToSoluce:56 Time:10.311) 
+		   #(Breadth : nNodeVisited:66516 nNodeVisited2:28324 nNodeToSoluce:56 Time:3.364)
