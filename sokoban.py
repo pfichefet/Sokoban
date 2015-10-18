@@ -144,7 +144,6 @@ def checkBoxOnEndPoint(grid):
 				boxReachGoal.append((letter,line,col))
 	return boxReachGoal	
 
-
 def heuristic(grid):
 	grid=grid.state
 	state = list(grid[0])
@@ -155,7 +154,8 @@ def heuristic(grid):
 	closestGoal = ()
 	distAllBoxToAllTarget = 0
 	box = checkBoxOnEndPoint(grid)
-
+	if len(box)==0:
+		return 0
 	for (letter,line,col) in state:
 		if (letter == '@'):
 			littleMan.append(line)
@@ -165,7 +165,7 @@ def heuristic(grid):
 	for (letter,line,col) in box:
 		if(distManToBox >= abs(littleMan[0]-line)+abs(littleMan[1]-col)-1):
 			distManToBox = abs(littleMan[0]-line)+abs(littleMan[1]-col)-1 #-1 because we need to go next to the box not on the box
-		
+	
 	for (letter,line,col) in box:
 		distBoxToTarget = sys.maxsize
 		for (point,goalLine,goalCol) in stateGoal:
@@ -176,7 +176,8 @@ def heuristic(grid):
 				closestGoal = (point,goalLine,goalCol)		
 		stateGoal.remove(closestGoal)		
 		distAllBoxToAllTarget += distBoxToTarget
-	return distManToBox+distAllBoxToAllTarget+(needToChangeDirection*2)
+	dist=distManToBox+distAllBoxToAllTarget+2*needToChangeDirection
+	return dist
 
 def canMove(grid,ligne,colonne,sizeMap,diir):
 	what=whatIsHere(grid,ligne,colonne)
@@ -233,23 +234,23 @@ def stuckAgainstWall(grid,boxLine,boxCol,size,goal,diir):
 		if iswall(grid,newL,newC,size):
 			if(diir[1] == 0):
 				while(newL < size[0]):
-					if ('.',newL,boxCol) in goal or not iswall(grid,newL,newC,size):
+					if ('.',newL,boxCol) in goal or (not iswall(grid,newL,newC,size) and not iswall(grid,newL,newC-2*diir[0],size)):
 						return False
 					newL += 1
 				newL=boxLine-1
 				while(newL >= 0):
 
-					if ('.',newL,boxCol) in goal or not iswall(grid,newL,newC,size) :
+					if ('.',newL,boxCol) in goal or (not iswall(grid,newL,newC,size) and not iswall(grid,newL,newC-2*diir[0],size)) :
 						return False
 					newL -= 1
 			elif(diir[0] == 0):
 				while(newC < size[1]):
-					if ('.',boxLine,newC) in goal or not iswall(grid,newL,newC,size) :
+					if ('.',boxLine,newC) in goal or (not iswall(grid,newL,newC,size) and not iswall(grid,newL-2*diir[1],newC,size)) :
 						return False
 					newC += 1
 				newC=boxCol-1
 				while(newC >= 0):
-					if ('.',boxLine,newC) in goal or not iswall(grid,newL,newC,size) :
+					if ('.',boxLine,newC) in goal or (not iswall(grid,newL,newC,size) and not iswall(grid,newL-2*diir[1],newC,size)):
 						return False
 					newC -= 1
 			return True
@@ -327,8 +328,8 @@ def printState(grid,colonne,ligne):
 start_time = time.time()  
 problem=Sokoban(sys.argv[1])
 
-#node=astar_graph_search(problem,heuristic)
-node=breadth_first_graph_search(problem)
+node=astar_graph_search(problem,heuristic)
+#node=breadth_first_graph_search(problem)
 
 path=node[0].path()
 path.reverse()
@@ -346,17 +347,17 @@ print("number of node visited2: %d" % nNodeV2)
 print('Total time in seconds:', interval )
 
 
-#SokoInst01 (Astar : nNodeVisited:18830 nNodeVisited2:6358 nNodeToSoluce:15 Time:0.446) 
+#SokoInst01 (Astar : nNodeVisited:387 nNodeVisited2:206 nNodeToSoluce:15 Time:0.019) 
 		   #(Breadth : nNodeVisited:1847 nNodeVisited2:842 nNodeToSoluce:15 Time:0.031)
 
-#SokoInst02 (Astar : nNodeVisited:34874 nNodeVisited2:15006 nNodeToSoluce:65 Time:1.342) 
+#SokoInst02 (Astar : nNodeVisited:8114 nNodeVisited2:3512 nNodeToSoluce:66 Time:0.35) 
 		   #(Breadth : nNodeVisited:9079 nNodeVisited2:3941 nNodeToSoluce:65 Time:0.264)
 
-#SokoInst07 (Astar : nNodeVisited:4369 nNodeVisited2:1921 nNodeToSoluce:98 Time:0.346) 
+#SokoInst07 (Astar : nNodeVisited:3571 nNodeVisited2:1602 nNodeToSoluce:98 Time:0.295) 
 		   #(Breadth : nNodeVisited:4136 nNodeVisited2:1837 nNodeToSoluce:98 Time:0.279)
 
-#SokoInst08 (Astar : nNodeVisited:7448 nNodeVisited2:3495 nNodeToSoluce:90 Time:0.49) 
+#SokoInst08 (Astar : nNodeVisited:5736 nNodeVisited2:2804 nNodeToSoluce:90 Time:0.446) 
 		   #(Breadth : nNodeVisited:7419 nNodeVisited2:3489 nNodeToSoluce:90 Time:0.387)
 
-#SokoInst15 (Astar : nNodeVisited:155626 nNodeVisited2:62312 nNodeToSoluce:56 Time:10.311) 
+#SokoInst15 (Astar : nNodeVisited:22297 nNodeVisited2:9651 nNodeToSoluce:56 Time:1.613) 
 		   #(Breadth : nNodeVisited:66516 nNodeVisited2:28324 nNodeToSoluce:56 Time:3.364)
