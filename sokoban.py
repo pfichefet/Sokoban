@@ -54,10 +54,9 @@ class Sokoban(Problem):
 				where=0
 
 				if(what=='box'):
-					if(blockCorner(grid,newL+line,newC+col,self.size,state[1]) 
-						or stuckAgainstWall(grid,newL+line,newC+col,self.size,state[1],(col,line))):
-					#if(not stuckAgainstWall(grid,newL+line,newC+col,self.size)):
-						continue
+					#if(blockCorner(grid,newL+line,newC+col,self.size,state[1]) 
+						#or stuckAgainstWall(grid,newL+line,newC+col,self.size,state[1],(col,line))):
+						#continue
 
 					where=findBox(grid,newL,newC)
 					newLB=newL+line
@@ -328,8 +327,8 @@ def printState(grid,colonne,ligne):
 start_time = time.time()  
 problem=Sokoban(sys.argv[1])
 
-node=astar_graph_search(problem,heuristic)
-#node=breadth_first_graph_search(problem)
+#node=astar_graph_search(problem,heuristic)
+node=breadth_first_graph_search(problem)
 
 path=node[0].path()
 path.reverse()
@@ -361,3 +360,20 @@ print('Total time in seconds:', interval )
 
 #SokoInst15 (Astar : nNodeVisited:22297 nNodeVisited2:9651 nNodeToSoluce:56 Time:1.613) 
 		   #(Breadth : nNodeVisited:66516 nNodeVisited2:28324 nNodeToSoluce:56 Time:3.364)
+
+		   #WITHOUT DEADSTATE
+
+#SokoInst01 (Astar : nNodeVisited:419 nNodeVisited2:230 nNodeToSoluce:15 Time:0.03) 
+		   #(Breadth : nNodeVisited:2798 nNodeVisited2:1302 nNodeToSoluce:15 Time:0.049)
+
+#SokoInst02 (Astar : nNodeVisited:49491 nNodeVisited2:21027 nNodeToSoluce:66 Time:2.192) 
+		   #(Breadth : nNodeVisited:65548 nNodeVisited2:27342 nNodeToSoluce:65 Time:1.859)
+
+#SokoInst07 (Astar : nNodeVisited:8241 nNodeVisited2:3659 nNodeToSoluce:98 Time:0.604) 
+		   #(Breadth : nNodeVisited:9394 nNodeVisited2:4139 nNodeToSoluce:98 Time:0.558)
+
+#SokoInst08 (Astar : nNodeVisited:12760 nNodeVisited2:6148 nNodeToSoluce:90 Time:0.912) 
+		   #(Breadth : nNodeVisited:16807 nNodeVisited2:7865 nNodeToSoluce:90 Time:0.895)
+
+#SokoInst15 (Astar : nNodeVisited:728563 nNodeVisited2:289838 nNodeToSoluce:56 Time:82.885) 
+		   #(Breadth : nNodeVisited:2608921 nNodeVisited2:996901 nNodeToSoluce:56 Time:152.327)
