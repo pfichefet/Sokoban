@@ -24,21 +24,17 @@ class Sokoban(Problem):
 		boxEndingState = 0
 		NumberOfEndingPoint = len(stateGoal)
 		for (letter,line,col) in currentState:
-			if (letter == '$'):
-				for (point,endLine,endCol) in stateGoal:
-					if(line == endLine and col == endCol):
-						boxEndingState += 1
-						break
+			if(letter == '$'):
+				if ('.',line,col) in stateGoal:
+					boxEndingState += 1
 		if (NumberOfEndingPoint == boxEndingState):
 			return True
 		else:
 			return False
 	
-	def successor(self, state): #state = (  ( (currentLisLetter),(currentPointLine,currentPointCol) ),(grid)  )
+	def successor(self, state): 
 		successors = []
-
 		i=0
-		#state=state[1]
 		grid=tupleToList(state[0])
 		for elem,line,col in grid:
 			if(elem =='@'):
@@ -52,12 +48,10 @@ class Sokoban(Problem):
 			what=whatIsHere(grid,newL,newC)
 			if(canMove(grid,newL,newC,self.size,(line,col))):
 				where=0
-
 				if(what=='box'):
 					if(blockCorner(grid,newL+line,newC+col,self.size,state[1]) 
 						or stuckAgainstWall(grid,newL+line,newC+col,self.size,state[1],(col,line))):
 						continue
-
 					where=findBox(grid,newL,newC)
 					newLB=newL+line
 					newCB=newC+col
@@ -113,6 +107,7 @@ class Sokoban(Problem):
 
 directions = [ [-1, 0], [1, 0], [0, -1], [0, 1] ]
 
+#return the index of the box with position (l,c) in the tuple grid
 def findBox(grid,l,c):
 	i=0
 	for elem,line,col in grid:
@@ -132,7 +127,7 @@ def listToTuple(List):
 		Tuple.append(tuple(line))
 	return tuple(Tuple)	
 
-#check if how many boxes reach their goal
+#check how many boxes reach their goal, return a list of it.
 def checkBoxOnEndPoint(grid):
 	boxReachGoal = []
 	state = list(grid[0])
@@ -143,6 +138,7 @@ def checkBoxOnEndPoint(grid):
 				boxReachGoal.append((letter,line,col))
 	return boxReachGoal	
 
+#Uncomment all lines of this function for better performance, unfortunately the heuristic will not be consistant anymore.
 def heuristic(grid):
 	grid=grid.state
 	state = list(grid[0])
@@ -152,22 +148,22 @@ def heuristic(grid):
 	distManToBox = sys.maxsize
 	closestGoal = ()
 	distAllBoxToAllTarget = 0
-	box = checkBoxOnEndPoint(grid)
-	if len(box)==0:
+	box = checkBoxOnEndPoint(grid)  #list of boxes which not reach their goal
+	if len(box)==0: #if all boxes have reach their goal it's over!!!
 		return 0
-	for (letter,line,col) in state:
+	for (letter,line,col) in state: #add the position (l,c) of the little man to the list littleMan.
 		if (letter == '@'):
 			littleMan.append(line)
 			littleMan.append(col)	
 			break
 
-	for (letter,line,col) in box:
+	for (letter,line,col) in box: # Compute the distance from the little man to the closest box.
 		if(distManToBox >= abs(littleMan[0]-line)+abs(littleMan[1]-col)-1):
 			#closestBoxLine = line
 			#closestBoxCol = col 
 			distManToBox = abs(littleMan[0]-line)+abs(littleMan[1]-col)-1 #-1 because we need to go next to the box not on the box
 	
-	for (letter,line,col) in box:
+	for (letter,line,col) in box: # Compute the distance from all boxes to their closest ending points.
 		distBoxToTarget = sys.maxsize
 		for (point,goalLine,goalCol) in stateGoal:
 			if(distBoxToTarget >= abs(line-goalLine)+abs(col-goalCol)):
@@ -181,11 +177,12 @@ def heuristic(grid):
 		#	elif(col == closestGoal[2] and littleMan[1] != closestGoal[2]):
 		#		needToChangeDirection += 1	
 
-		stateGoal.remove(closestGoal)		
+		stateGoal.remove(closestGoal) # remove an ending point of the list, we've already used him for the heuristic.	
 		distAllBoxToAllTarget += distBoxToTarget
 	dist=distManToBox+distAllBoxToAllTarget#+2*needToChangeDirection
 	return dist
 
+#Check if move is possible in a given direction.
 def canMove(grid,ligne,colonne,sizeMap,diir):
 	what=whatIsHere(grid,ligne,colonne)
 	if what=='wall' or not inBounds(grid,(ligne,colonne),sizeMap):
@@ -201,7 +198,7 @@ def canMove(grid,ligne,colonne,sizeMap,diir):
 	else:
 		return True
 
-#si touche 2 mur, cas useless (test pas encore si ya une boite qui bloque (vu quon peut ptet la bouger))
+#Check whether a box is block by walls or not.
 def blockCorner(grid,ligne,colonne,sizeMap,goal):
 	count=0 
 	lr=0
@@ -220,7 +217,7 @@ def blockCorner(grid,ligne,colonne,sizeMap,goal):
 		 			lr+=1
 		else:
 			return False
-	if count>2: # > 2 et pas >= car le bloc n'est bloqué que si les 2 mur qui le touchent, touchent des côté adjacent.	
+	if count>2: 
 		return True
 	elif count==2:
 		if (ud==2 or lr==2):
@@ -233,6 +230,7 @@ def blockCorner(grid,ligne,colonne,sizeMap,goal):
 def iswall(grid,newL,newC,size):
 	return whatIsHere(grid,newL,newC) == 'wall' or not (inBounds(grid,(newL,newC),size))
 
+#Check if a block is stucked along a straight wall with no recess.
 def stuckAgainstWall(grid,boxLine,boxCol,size,goal,diir):
 	if('.',boxLine,boxCol) not in goal:
 
@@ -266,7 +264,6 @@ def stuckAgainstWall(grid,boxLine,boxCol,size,goal,diir):
 	else:
 		return False
 
-#Mettre coordonnee sans mur exterieur (je pense)
 def whatIsHere(grid,ligne,colonne):
 	for e in grid:
 		if ligne==e[1] and colonne==e[2]:
@@ -276,12 +273,10 @@ def whatIsHere(grid,ligne,colonne):
 				return 'wall'
 	return 'nothing'
 
-
-#verifie si on est dans la map sans mur externe (ligne,colonne)
+#Check whether or not we are inside the map.
 def inBounds(grid, pos,sizeMap):
 	return 0 <= pos[0] and pos[0] < sizeMap[0] and 0 <= pos[1] and pos[1] < sizeMap[1]
 
-#mettre colonne+2 et ligne +2 ou sizeC sizeL du createmap (donc VRAI TAILLE AVEC MUR EXTERNE)
 def printState(grid,colonne,ligne):
 	i=0
 	flligne=""
@@ -352,36 +347,3 @@ print("number of node (for solution): %d" % nNode)
 print("number of node visited: %d" % nNodeV) 
 print("number of node visited2: %d" % nNodeV2) 
 print('Total time in seconds:', interval )
-
-
-#SokoInst01 (Astar : nNodeVisited:387 nNodeVisited2:206 nNodeToSoluce:15 Time:0.019) 
-		   #(Breadth : nNodeVisited:1847 nNodeVisited2:842 nNodeToSoluce:15 Time:0.031)
-
-#SokoInst02 (Astar : nNodeVisited:8114 nNodeVisited2:3512 nNodeToSoluce:66 Time:0.35) 
-		   #(Breadth : nNodeVisited:9079 nNodeVisited2:3941 nNodeToSoluce:65 Time:0.264)
-
-#SokoInst07 (Astar : nNodeVisited:3571 nNodeVisited2:1602 nNodeToSoluce:98 Time:0.295) 
-		   #(Breadth : nNodeVisited:4136 nNodeVisited2:1837 nNodeToSoluce:98 Time:0.279)
-
-#SokoInst08 (Astar : nNodeVisited:5736 nNodeVisited2:2804 nNodeToSoluce:90 Time:0.446) 
-		   #(Breadth : nNodeVisited:7419 nNodeVisited2:3489 nNodeToSoluce:90 Time:0.387)
-
-#SokoInst15 (Astar : nNodeVisited:22297 nNodeVisited2:9651 nNodeToSoluce:56 Time:1.613) 
-		   #(Breadth : nNodeVisited:66516 nNodeVisited2:28324 nNodeToSoluce:56 Time:3.364)
-
-		   #WITHOUT DEADSTATE
-
-#SokoInst01 (Astar : nNodeVisited:419 nNodeVisited2:230 nNodeToSoluce:15 Time:0.03) 
-		   #(Breadth : nNodeVisited:2798 nNodeVisited2:1302 nNodeToSoluce:15 Time:0.049)
-
-#SokoInst02 (Astar : nNodeVisited:49491 nNodeVisited2:21027 nNodeToSoluce:66 Time:2.192) 
-		   #(Breadth : nNodeVisited:65548 nNodeVisited2:27342 nNodeToSoluce:65 Time:1.859)
-
-#SokoInst07 (Astar : nNodeVisited:8241 nNodeVisited2:3659 nNodeToSoluce:98 Time:0.604) 
-		   #(Breadth : nNodeVisited:9394 nNodeVisited2:4139 nNodeToSoluce:98 Time:0.558)
-
-#SokoInst08 (Astar : nNodeVisited:12760 nNodeVisited2:6148 nNodeToSoluce:90 Time:0.912) 
-		   #(Breadth : nNodeVisited:16807 nNodeVisited2:7865 nNodeToSoluce:90 Time:0.895)
-
-#SokoInst15 (Astar : nNodeVisited:728563 nNodeVisited2:289838 nNodeToSoluce:56 Time:82.885) 
-		   #(Breadth : nNodeVisited:2608921 nNodeVisited2:996901 nNodeToSoluce:56 Time:152.327)
