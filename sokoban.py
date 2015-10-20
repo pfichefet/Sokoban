@@ -54,9 +54,9 @@ class Sokoban(Problem):
 				where=0
 
 				if(what=='box'):
-					#if(blockCorner(grid,newL+line,newC+col,self.size,state[1]) 
-						#or stuckAgainstWall(grid,newL+line,newC+col,self.size,state[1],(col,line))):
-						#continue
+					if(blockCorner(grid,newL+line,newC+col,self.size,state[1]) 
+						or stuckAgainstWall(grid,newL+line,newC+col,self.size,state[1],(col,line))):
+						continue
 
 					where=findBox(grid,newL,newC)
 					newLB=newL+line
@@ -148,7 +148,7 @@ def heuristic(grid):
 	state = list(grid[0])
 	stateGoal = list(grid[1])
 	littleMan = []
-	needToChangeDirection = 0
+	#needToChangeDirection = 0
 	distManToBox = sys.maxsize
 	closestGoal = ()
 	distAllBoxToAllTarget = 0
@@ -163,6 +163,8 @@ def heuristic(grid):
 
 	for (letter,line,col) in box:
 		if(distManToBox >= abs(littleMan[0]-line)+abs(littleMan[1]-col)-1):
+			#closestBoxLine = line
+			#closestBoxCol = col 
 			distManToBox = abs(littleMan[0]-line)+abs(littleMan[1]-col)-1 #-1 because we need to go next to the box not on the box
 	
 	for (letter,line,col) in box:
@@ -170,12 +172,18 @@ def heuristic(grid):
 		for (point,goalLine,goalCol) in stateGoal:
 			if(distBoxToTarget >= abs(line-goalLine)+abs(col-goalCol)):
 				distBoxToTarget = abs(line-goalLine)+abs(col-goalCol)
-				if(line != goalLine and col != goalCol):
-					needToChangeDirection += 1	
-				closestGoal = (point,goalLine,goalCol)		
+				closestGoal = (point,goalLine,goalCol)
+		#if(line != closestGoal[1] and col != closestGoal[2]):
+		#			needToChangeDirection += 1	
+		#elif(distManToBox == 0 and line == closestBoxLine and col == closestBoxCol):
+		#	if(line == closestGoal[1] and littleMan[0] != closestGoal[1]):
+		#		needToChangeDirection += 1
+		#	elif(col == closestGoal[2] and littleMan[1] != closestGoal[2]):
+		#		needToChangeDirection += 1	
+
 		stateGoal.remove(closestGoal)		
 		distAllBoxToAllTarget += distBoxToTarget
-	dist=distManToBox+distAllBoxToAllTarget+2*needToChangeDirection
+	dist=distManToBox+distAllBoxToAllTarget#+2*needToChangeDirection
 	return dist
 
 def canMove(grid,ligne,colonne,sizeMap,diir):
@@ -327,8 +335,8 @@ def printState(grid,colonne,ligne):
 start_time = time.time()  
 problem=Sokoban(sys.argv[1])
 
-#node=astar_graph_search(problem,heuristic)
-node=breadth_first_graph_search(problem)
+node=astar_graph_search(problem,heuristic)
+#node=breadth_first_graph_search(problem)
 
 path=node[0].path()
 path.reverse()
